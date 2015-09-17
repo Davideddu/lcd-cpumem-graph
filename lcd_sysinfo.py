@@ -86,41 +86,42 @@ def print_bar(full, avail, cur_pos=[0, 0], reverse=False):
 		lcd.set_cursor(row, col + avail)
 		lcd.ltr = True
 
-try:
-	while True:
-		try:
-			ioi = LCDBackpack(1, 0x27)
-			lcd = LiquidCrystal(ioi)
-			create_custom_chars(lcd)
-			prev_cpu_full = -1
-			prev_mem_full = -1
-			while True:
-				cpu_p = psutil.cpu_percent(0.1)
-				mem_u = psutil.phymem_usage()
-				cpu_s = str(int(cpu_p)) + "%"
-				mem_s = format_size(mem_u.used)
+if __name__ == "__main__":
+	try:
+		while True:
+			try:
+				ioi = LCDBackpack(1, 0x27)
+				lcd = LiquidCrystal(ioi)
+				create_custom_chars(lcd)
+				prev_cpu_full = -1
+				prev_mem_full = -1
+				while True:
+					cpu_p = psutil.cpu_percent(0.1)
+					mem_u = psutil.phymem_usage()
+					cpu_s = str(int(cpu_p)) + "%"
+					mem_s = format_size(mem_u.used)
 
-				avail_c_c = 15 - len(cpu_s)
-				full_c = full_ch_num(cpu_p, avail_c_c)
-				lcd.home()
-				if not full_c == prev_cpu_full:
-					lcd.print_str("C")#write(6) # cpu
-					print_bar(full_c, avail_c_c, [0, 1], full_c < prev_cpu_full)
-					lcd.print_str(cpu_s)
-					prev_cpu_full = full_c
+					avail_c_c = 15 - len(cpu_s)
+					full_c = full_ch_num(cpu_p, avail_c_c)
+					lcd.home()
+					if not full_c == prev_cpu_full:
+						lcd.print_str("C")#write(6) # cpu
+						print_bar(full_c, avail_c_c, [0, 1], full_c < prev_cpu_full)
+						lcd.print_str(cpu_s)
+						prev_cpu_full = full_c
 
-				avail_c_m = 15 - len(mem_s)
-				full_c = full_ch_num(mem_u.percent, avail_c_m)
-				if not full_c == prev_mem_full:
-					lcd.set_cursor(1, 0)
-					lcd.print_str("M")#write(7) # mem
-					print_bar(full_c, avail_c_m, [1, 1], full_c < prev_mem_full)
-					lcd.print_str(mem_s)
-					prev_mem_full = full_c
+					avail_c_m = 15 - len(mem_s)
+					full_c = full_ch_num(mem_u.percent, avail_c_m)
+					if not full_c == prev_mem_full:
+						lcd.set_cursor(1, 0)
+						lcd.print_str("M")#write(7) # mem
+						print_bar(full_c, avail_c_m, [1, 1], full_c < prev_mem_full)
+						lcd.print_str(mem_s)
+						prev_mem_full = full_c
 
-				time.sleep(0.3)
-		except IOError:
-			time.sleep(1)
-			continue
-except KeyboardInterrupt:
-	pass
+					time.sleep(0.3)
+			except IOError:
+				time.sleep(1)
+				continue
+	except KeyboardInterrupt:
+		raise SystemExit
